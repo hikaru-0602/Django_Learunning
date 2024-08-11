@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',  #フラッシュメッセージのためのアプリケーション
     'django.contrib.staticfiles',  #静的ファイルに関連する機能を持つアプリケーション
     'snippets.apps.SnippetsConfig',  #snippetsアプリケーション
+    'django_bootstrap5',  #Bootstrap5のためのアプリケーション
+    'pygments_renderer',  #Pygmentsのためのアプリケーション
+    'accounts.apps.AccountsConfig',  #accountsアプリケーション
 ]
 
 MIDDLEWARE = [
@@ -55,7 +58,7 @@ ROOT_URLCONF = 'djangotest.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  #テンプレートファイルを格納するディレクトリ
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
