@@ -24,14 +24,33 @@ class TopPageRenderSnippetsTest(TestCase):  #トップページにスニペッ�
         self.assertContains(response, self.user.username)       
 
 class CreateSnippetTest(TestCase):  #スペニットの新規作成画面
-    def test_should_resolve_snippet_new(self):
-        found = resolve('/snippets/new/')
-        self.assertEqual(snippet_new,found.func)
+    def setUp(self):
+        self.user=UserModel.objects.create(username='test_user', email="test@example.com", password="secret")
+        self.client.force_login(self.user)
+    
+    def test_render_creation_form(self):
+        response=self.client.get('/snippets/new/')
+        self.assertContains(response, 'スニペットの登録',status_code=200)
+
+    def test_create_snippet(self):
+        data={'title':'タイトル', 'code':'コード', 'description':'解説'}
+        self.client.post('/snippets/new/', data)
+        snippet=Snippet.objects.get(title='タイトル')
+        self.assertEqual('コード', snippet.code)
+        self.assertEqual('解説', snippet.description)
 
 class SnippetDetailTest(TestCase):  #スペニットの詳細画面
-    def test_should_resolve_snippet_detail(self):
-        found = resolve('/snippets/1/')
-        self.assertEqual(snippet_detail,found.func)
+    def setUp(self):
+        self.user=UserModel.objects.create(username='test_user', email="test@example.com", password="secret")
+        self.snippet=Snippet.objects.create(title="タイトル", code="コード", description="解説", created_by=self.user)
+    
+    def test_should_use_expected_template(self):
+        response=self.client.get(f'/snippets/%s/' % self.snippet.id)
+        self.assertTemplateUsed(response, 'snippets/snippet_detail.html')
+
+    def test_should_return_200_and_expected_heading(self):
+        response=self.client.get(f'/snippets/%s/' % self.snippet.id)
+        self.assertContains(response, self.snippet.title, status_code=200)
 
 class EditSnippetTest(TestCase):  #スペニットの編集画面
     def test_should_resolve_snippet_edit(self):
